@@ -1,4 +1,4 @@
-FROM apopelo/java:oracle-1.7
+FROM apopelo/java-oracle-1.7
 
 MAINTAINER Andrey Popelo andrey@popelo.com
 
