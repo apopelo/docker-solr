@@ -1,16 +1,22 @@
-FROM apopelo/java-oracle-1.7
+FROM java:8
 
 MAINTAINER Andrey Popelo andrey@popelo.com
 
+ENV SOLR_VERSION 4.10.4
+ENV SOLR solr-$SOLR_VERSION
 
-# Install Apache Solr
-ENV SOLR_VERSION 3.6.0
-ENV SOLR apache-solr-$SOLR_VERSION
-ADD http://archive.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR.tgz /opt/$SOLR.tgz
-RUN tar -C /opt --extract --file /opt/$SOLR.tgz
-RUN mv /opt/$SOLR /opt/solr
-
-# Run Apache Solr
-CMD ["/bin/bash", "-c", "cd /opt/solr/example; java -jar start.jar"]
+RUN export DEBIAN_FRONTEND=noninteractive && \
+  apt-get update && \
+  apt-get -y install \
+    curl \
+    lsof \
+    procps && \
+  mkdir -p /opt && \
+  wget -nv --output-document=/opt/$SOLR.tgz http://archive.apache.org/dist/lucene/solr/$SOLR_VERSION/$SOLR.tgz && \
+  tar -C /opt --extract --file /opt/$SOLR.tgz && \
+  rm /opt/$SOLR.tgz && \
+  ln -s /opt/$SOLR /opt/solr
 
 EXPOSE 8983
+WORKDIR /opt/solr
+CMD ["/bin/bash", "-c", "/opt/solr/bin/solr -f"]
